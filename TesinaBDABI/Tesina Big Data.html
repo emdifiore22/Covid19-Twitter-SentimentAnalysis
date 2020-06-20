@@ -13094,14 +13094,16 @@ div#notebook {
 </ul>
 <p>Il lavoro è strutturato come segue:</p>
 <ul>
-<li><a href="#1">Cenni alla teoria della Sentiment Analysis, estrazione dei tweet e introduzione al loro formato</a></li>
-<li><a href="#2">Etichettatura del dataset usando la libreria nltk (modello Vader)</a>;</li>
-<li><a href="#3">Addestramento di un modello di ML sul dataset etichettato e calcolo dell'accuracy</a>;</li>
-<li><a href="#4">SentiWordNet per l'etichettatura del dataset</a>;</li>
-<li><a href="#5">Analisi delle performance di Spark</a>.</li>
+<li><a href="#1">Cenni alla teoria della Sentiment Analysis</a></li>
+<li><a href="#2">Architettura del sistema, estrazione dei tweet e introduzione al loro formato</a></li>
+<li><a href="#3">Etichettatura del dataset usando la libreria nltk (modello Vader)</a>;</li>
+<li><a href="#4">Addestramento di un modello di ML sul dataset etichettato e calcolo dell'accuracy</a>;</li>
+<li><a href="#5">SentiWordNet per l'etichettatura del dataset</a>;</li>
+<li><a href="#6">Visualizzazione risultati tramite Microstrategy</a></li>
+<li><a href="#7">Analisi delle performance</a>.</li>
 </ul>
-<p>Inoltre è presente un'<a href="#7">appendice</a> riguardante l'installazione in locale di Spark e MongoDB.
-<br>Infine, una sezione per i <a href="#8">riferimenti</a> utilizzati nella trattazione.</p>
+<p>Inoltre è presente un'<a href="#8">appendice</a> riguardante l'installazione in locale di Spark e MongoDB.
+<br>Infine, una sezione per i <a href="#9">riferimenti</a> utilizzati nella trattazione.</p>
 <p>Tutto il codice sviluppato è presente su Github al seguente <a href="https://github.com/emdifiore22/Covid19-Twitter-SentimentAnalysis">link</a>.</p>
 
 </div>
@@ -13124,11 +13126,30 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p><a id='2'>
+    <h3>Architettura del sistema</h3>
+</a>
+<br>Di seguito è riportato uno schema che rappresenta il sistema ideato. In particolare, si notino l'ambiente virtuale su cui è in esecuzione Spark, le varie tecnologie (tool e librerie) utilizzate per l'elaborato e l'ambiente host su cui è in ascolto il server di MongoDB. Infine, tutti i risultati sono scritti sul Database NoSQL per facilitare la fase di reportistica svolta tramite il tool MicroStrategy e mostrata in un successivo paragrafo.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="images/architettura_sistema.jpg" alt="Architettura del sistema"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <p><h5>Perché MongoDB?</h5></p>
 <div style="text-align: justify">
 <br>Le tecnologie NoSQL sono particolarmente note per la loro caratteristica di essere "schema-less", ovvero i dati in essi memorizzati non devono necessariamente sottostare a uno schema prefissato così come nelle soluzioni relazionali. Tale caratteristica si presta molto bene al caso in esame, in cui i singoli tweet (la cui struttura è spiegata nel seguito) non rispettano rigorosamente una struttura. Ad esempio, se un tweet è originale (ovvero non ne ricondivide un altro) non presenta alcuni campi, tra cui il campo "retweeted_status".
 <br> In particolare, tra le varie soluzioni non relazionali, è stato scelto <b>MongoDB</b> per il suo orientamento ai documenti. Infatti, memorizza i dati in un formato JSON-like (BSON, Binary JSON), che è un "cugino" del formato JSON restituito dal tool utilizzato per estrarre i tweet. Questo ha reso molto rapida l'importazione dei dati nel DB.
-<br> Nella scelta di un DB NoSQL pesa anche il tipo di operazioni che si intende effettuare sui dati. Nel nostro caso, non è stato necessario analizzare eventuali relazioni tra i tweet, ma solo dei filtraggi sulla base dei valori per alcuni campi. Ciò ci ha portato a dire che una soluzione diversa da quella documentale, ad esempio una orientata ai grafi (Neo4j), non è la più indicata.
+<br> Nella scelta di un DB NoSQL pesa anche il tipo di operazioni che si intende effettuare sui dati. Nel nostro caso, non è stato necessario analizzare eventuali relazioni tra i tweet, ma solo dei filtraggi sulla base dei valori per alcuni campi. Ciò ci ha portato a dire che una soluzione diversa da quella documentale, ad esempio una orientata ai grafi (Neo4j), non è la più indicata. Inoltre, sarebbe stato possibile adottare anche una soluzione Key-Value, ma questo avrebbe comportato lo svolgimento del filtraggio direttamente da codice Spark, essendo la struttura dell'aggregato ignota al Database.
 </div>
 </div>
 </div>
@@ -13172,7 +13193,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <div style="text-align: justify">
-<br>Per poter estrarre i tweet è stato utilizzato lo script TwarcTwitterExtraction.py, disponibile nel repository GitHub del progetto. Tale script utilizza in input una lista di identificativi e genera in output un file in formato JSON Lines contenente i JSON dei tweet. Per tale elaborato sono stati gli identificativi associati alle date:
+<br>Per poter estrarre i tweet è stato utilizzato lo script TwarcTwitterExtraction.py, disponibile nel repository GitHub del progetto. Tale script utilizza in input una lista di identificativi e genera in output un file in formato JSON Lines contenente i JSON dei tweet. Per tale elaborato sono stati estratti gli identificativi associati alle date:
 </div>
 </div>
 </div>
@@ -13181,14 +13202,17 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <ul>
-<li>13/02/2020</li>
+<li>02/03/2020</li>
+<li>09/03/2020</li>
 <li>16/03/2020</li>
-<li>29/03/2020</li>
+<li>23/03/2020</li>
 <li>30/03/2020</li>
-<li>08/04/2020</li>
-<li>29/04/2020</li>
+<li>06/04/2020</li>
+<li>13/04/2020</li>
+<li>20/04/2020</li>
+<li>27/04/2020</li>
 </ul>
-<p>A causa dell’elevata quantità di id presenti in questi file, essi sono stati processati soltanto in parte, arrivando a raccogliere 113965 tweet.</p>
+<p>A causa dell’elevata quantità di id presenti in questi file, essi sono stati processati soltanto in parte, arrivando a raccogliere 132218 tweet.</p>
 
 </div>
 </div>
@@ -13211,7 +13235,7 @@ div#notebook {
 <p>Di seguito è mostrata la struttura completa di un tweet con e senza retweeted_status.
 <img src="images/tweet_json.jpg" alt="JSON dei tweet"></p>
 <p><h5>Filtraggio</h5>
-<br>Una volta memorizzati tutti i tweet in una collection MongoDB, si è deciso di utilizzare per la Sentiment Analysis tutti i tweet in lingua inglese (campo lang uguale a ‘en’) e di selezionare il campo full_text per i tweet originali ed il campo retweeted_status.full_text per i tweet frutto di ricondivisione. Tale filtraggio si può facilmente effettuare tramite delle query ad hoc sul database. Le possibilità sono due:</p>
+<br>Una volta memorizzati tutti i tweet in una collection MongoDB, si è deciso di utilizzare per la Sentiment Analysis tutti i tweet in lingua inglese (campo lang uguale a ‘en’) e di selezionare il campo <i>full_text</i> per i tweet originali ed il campo <i>retweeted_status.full_text</i> per i tweet frutto di ricondivisione. Tale filtraggio si può facilmente effettuare tramite delle query ad hoc sul database. Le possibilità sono due:</p>
 <ul>
 <li>Utilizzare il tool <b>MongoDB Compass</b> per effettuare le query utilizzando l’interfaccia grafica e poi esportare i risultati in formato JSON (da caricare successivamente in ambiente Spark);</li>
 <li>Utilizzare direttamente <b>MongoDB Spark Connector</b>.</li>
@@ -13311,7 +13335,7 @@ Poiché, in generale, può capitare che più utenti ricondividano lo stesso twee
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A valle del filtraggio, i tweet selezionati per la Sentiment Analysis sono 43710.</p>
+<p>A valle del filtraggio, i tweet selezionati per la Sentiment Analysis sono 50210.</p>
 
 </div>
 </div>
@@ -13319,7 +13343,7 @@ Poiché, in generale, può capitare che più utenti ricondividano lo stesso twee
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a id='2'>
+<p><a id='3'>
     <h3>Etichettatura tramite VADER</h3>
 </a></p>
 <div style="text-align: justify">
@@ -13376,7 +13400,7 @@ I positive, negative e neutral scores rappresentano la porzione di testo che ric
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a id='3'>
+<p><a id='4'>
     <h3>Machine Learning</h3>
 </a></p>
 <div style="text-align: justify">
@@ -13451,7 +13475,16 @@ Nel codice riportato è stata definita una pipeline che, in sequenza, crea TF, I
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a id='4'>
+<p>Di seguito è riportata un'immagine che mostra la matrice di confusione e i due risultati di accuratezza.</p>
+<p><img src="images/confusion_matrix.jpg" alt="Confusion Matrix"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id='5'>
     <h3>SentiWordNet</h3>
 </a></p>
 <div style="text-align: justify">
@@ -13698,10 +13731,29 @@ Nel codice riportato è stata definita una pipeline che, in sequenza, crea TF, I
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a id='5'>
-    <h3>Analisi delle performance di Spark</h3>
+<p><a id='6'>
+    <h3>Visualizzazione risultati tramite MicroStrategy</h3>
+</a>
+<br></p>
+<div style="text-align: justify">
+Dopo aver etichettato tutti tweet con il modello VADER, per facilitare la visualizzazione dei risultati ottenuti, è stato utilizzato il tool di BI MicroStrategy. I valori delle label (0, 1, 2) corrispondono rispettivamente ai sentimenti "Neutro", "Positivo" e "Negativo". Di seguito è riportato un grafico che mostra l'evoluzione temporale dei sentimenti durante i mesi di Marzo e Aprile 2020.
+</div><p><img src="images/diagramma_microstrategy.jpg" alt="Grafico Microstrategy"></p>
+<div style="text-align: justify">
+Come si può notare, molti tweet sono stati etichettati come neutri, mentre la quantità di positivi e negativi è pressoché la stessa. A ben vedere, però, la classificazione è stata fatta in modo piuttosto corretto se si pensa che molti tweet, in realtà, consistono soprattutto nella diffusione di messaggi relativi al numero di contagi o comunque difficilmente associabili a un sentimento positivo/negativo. Di seguito sono mostrati alcuni esempi di tweet etichettati. Il tweet "Neutro 2" ricade proprio nella categoria di tweet che "diffondono notizie" e per questo è difficile che il risultato sia diverso dal "neutro", dato nella maggior parte dei casi non esprimono uno stato d'animo, ma riportano semplicemente un fatto. Il caso del tweet "Neutro 1", invece, è emblematico in quanto esprime l'opinione di un utente ma, non essendo chiaro il suo orientamento, viene catalogato come tale.
+<br> Per trarre delle conclusioni sull'effettivo stato d'animo degli utenti (come hanno reagito) nel periodo di quarantena vissuto, quindi, risulta chiaro che andrebbero dapprima eliminati tutti quei tweet simili a alla tipologia di "Neutro 2", che non esprimono veri e propri sentimenti.
+</div><p><img src="images/esempi_tweet.jpg" alt="Esempi tweet etichettati"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id='7'>
+    <h3>Analisi delle performance</h3>
 </a></p>
 <div style="text-align: justify">
+<h5>Spark</h5>
 <br> In questa sezione riportiamo alcune considerazioni riguardanti le performance di Spark. Sebbene sia stata utilizzata una macchina virtuale e i tempi siano stati misurati sfruttando la direttiva time fornita da Jupyter (che, per la precisione, misura il cosiddetto wall time, ovvero non solo il tempo di utilizzo della CPU del singolo processo, ma anche quello dovuto all'interferenza di altri processi concorrenti), è comunque evidente il vantaggio nell'utilizzo di questo framework. Per valutare le performance, sono state confrontate due implementazioni dell'etichettatura tramite il modello VADER: una in pyspark (riportata sopra) e una in Python senza Spark. In particolare, per quanto riguarda la seconda, ne sono state preparate tre versioni: una prima che non sfrutta meccanismi di parallelizzazione del codice (usando libreria pandas); una seconda analoga alla prima ma che non usa pandas; una terza basata sulla libreria Multiprocessing per trarre beneficio dei più core sulla macchina per l'esecuzione delle funzioni sul DataFrame Pandas.
 </div>
 </div>
@@ -13710,10 +13762,8 @@ Nel codice riportato è stata definita una pipeline che, in sequenza, crea TF, I
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><h5>Esecuzioni</h5></p>
 <div style="text-align: justify">
-
-<br>Abbiamo eseguito l'algoritmo in ambiente Spark, usando il contesto di default creato all'avvio del notebook Jupyter. In tale situazione, Spark crea tanti worker (threads) quanti sono i core logici sulla macchina (local[*]). In questo caso, il tempo di esecuzione su 43710 tweet è pari circa a 18s.
+Abbiamo eseguito l'algoritmo in ambiente Spark, usando il contesto di default creato all'avvio del notebook Jupyter. In tale situazione, Spark crea tanti worker (threads) quanti sono i core logici sulla macchina (local[*]). In questo caso, il tempo di esecuzione su 43710 tweet (diversi da quelli utilizzati nei paragrafi precedenti) è pari circa a 18s.
 Il passo successivo è stato quello di eseguire le due versioni senza Spark. I risultati sono riportati di seguito:
 </div>
 </div>
@@ -13740,8 +13790,59 @@ Chiaramente, questa analisi non è stata svolta in modo accurato, ma nonostante 
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a id='7'>
-    <h3>Installazione Spark e MongoDB</h3>
+<p><h5>MongoDB</h5>
+<br></p>
+<div style="text-align: justify">
+In questa sezione si riportano alcuni esperimenti per valutare i tempi di risposta di MongoDB rispetto a una query. Sebbene la query espressa non sia particolarmente complicata, è opportuno notare che ciò è vero proprio in virtù della scelta di avere un singolo aggregato contenente sia il tweet vero e proprio (testo, numero di retweet, ecc.) sia le informazioni relative all'utente che l'ha scritto. Se si fosse adottata una soluzione relazionale, chiaramente questo non sarebbe stato possibile, a meno di non utilizzare più operazioni di join (particolarmente onerose all'aumentare dei dati).
+<br>Fatta questa premessa, nell'esempio che segue si evidenzia come l'uso di indici possa incrementare ulteriormente le prestazioni di una query. Nel caso in esame, la query estrae i retweet italiani sulla base dell'hashtag, del numero di retweet e del numero di followers dell'utente che l'ha generato.
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;lang&#39;</span><span class="p">:</span> <span class="s1">&#39;it&#39;</span><span class="p">,</span> 
+    <span class="s1">&#39;retweeted_status.lang&#39;</span><span class="p">:</span> <span class="s1">&#39;it&#39;</span><span class="p">,</span> 
+    <span class="s1">&#39;retweeted_status&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;$ne&#39;</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="p">},</span> 
+    <span class="s1">&#39;retweet_count&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;$gt&#39;</span><span class="p">:</span> <span class="mi">200</span>
+    <span class="p">},</span> 
+    <span class="s1">&#39;user.followers_count&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;$gt&#39;</span><span class="p">:</span> <span class="mi">500</span>
+    <span class="p">},</span> 
+    <span class="s1">&#39;retweeted_status.entities.hashtags.text&#39;</span><span class="p">:</span> <span class="s1">&#39;Coronavirus&#39;</span>
+<span class="p">}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Nel primo caso, l'assenza di un indice comporta un tempo di esecuzione pari a circa 2,5s.</p>
+<p><img src="images/mongodb/1.jpg" alt="Grafico Microstrategy"></p>
+<p>Nel secondo caso, i tweet sono stati indicizzati una volta per lingua e un'altra volta sia per lingua che per hashtag. Di seguito sono mostrati i rispettivi tempi di esecuzione.</p>
+<p><img src="images/mongodb/2.jpg" alt="Grafico Microstrategy">
+<img src="images/mongodb/3.jpg" alt="Grafico Microstrategy"></p>
+<p>È evidente come la presenza di un indice, nel caso di questa tipologia di query, possa ridurre in modo significativo i tempi per ottenere dei risultati. Altre query, che filtrano su parametri diversi rispetto a quelli specificati nell'indice, potrebbero non trarre nessun beneficio dall'indicizzazione, ma, anzi, potrebbero essere anche influenzate negativamente.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a id='8'>
+    <h3>Appendice 1 - Installazione Spark e MongoDB</h3>
 </a></p>
 <p><h5>Installazione Apache Spark</h5>
 <br>Per quanto riguarda l’installazione di Apache Spark in locale, una possibilità è quella di utilizzare una virtual machine, in modo da isolare completamente Spark dal sistema operativo host, mantenendo comunque la possibilità di eseguire script PySpark su dei notebook Jupyter. 
@@ -13819,7 +13920,7 @@ In particolare è stata utilizzata la versione 2.4.2 Community Server scaricabil
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a id='8'>
+<p><a id='9'>
     <h3>Riferimenti</h3>
 </a></p>
 <p>[1] Probabilistic Approaches for Sentiment Analysis: Latent Dirichlet Allocation for Ontology Building and Sentiment Extraction, Colace F., De Santo M.</p>
