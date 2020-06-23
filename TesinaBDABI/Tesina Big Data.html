@@ -13090,16 +13090,17 @@ div#notebook {
 <ul>
 <li>Apache Spark 2.4.5 (tramite la libreria pyspark) come ambiente per il preprocessing dei tweet, per la loro etichettatura, per l'addestramento e la valutazione di un modello di Machine Learning (ML);</li>
 <li>MongoDB come database NoSQL per lo storage dei tweet;</li>
-<li>Python per l'estrazione dei tweet tramite il tool Twarc.</li>
+<li>Python per l'estrazione dei tweet tramite il tool Twarc;</li>
+<li>MicroStrategy per la visualizzazione dei risultati.</li>
 </ul>
 <p>Il lavoro è strutturato come segue:</p>
 <ul>
 <li><a href="#1">Cenni alla teoria della Sentiment Analysis</a></li>
 <li><a href="#2">Architettura del sistema, estrazione dei tweet e introduzione al loro formato</a></li>
-<li><a href="#3">Etichettatura del dataset usando la libreria nltk (modello Vader)</a>;</li>
+<li><a href="#3">Etichettatura del dataset usando la libreria nltk (modello VADER)</a>;</li>
 <li><a href="#4">Addestramento di un modello di ML sul dataset etichettato e calcolo dell'accuracy</a>;</li>
 <li><a href="#5">SentiWordNet per l'etichettatura del dataset</a>;</li>
-<li><a href="#6">Visualizzazione risultati tramite Microstrategy</a></li>
+<li><a href="#6">Visualizzazione risultati tramite Microstrategy</a>;</li>
 <li><a href="#7">Analisi delle performance</a>.</li>
 </ul>
 <p>Inoltre è presente un'<a href="#8">appendice</a> riguardante l'installazione in locale di Spark e MongoDB.
@@ -13113,7 +13114,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a id='1'>
-    <h3>Sentiment Analysis e formato dei tweet</h3>
+    <h3>Sentiment Analysis</h3>
 </a></p>
 <div style="text-align: justify">
 <br>Ogni giorno, grazie ai social network, ai blog o ad altri sistemi di raccomandazione, vengono scambiati milioni di messaggi su Internet. Tali messaggi possono essere suddivisi in due principali categorie: fatti e opinioni. I fatti sono affermazioni oggettive, mentre le opinioni riflettono un sentimento di un utente rispetto a un utente, altre persone o eventi e sono molto importanti quanche c'è la necessità di prendere delle decisioni. L'espressione <b>Sentiment Analysis</b> (anche nota come Opinion Mining) fa riferimento all'uso di tecniche di Natural Language Processing (NLP), Text Analysis e Linguistica Computazionale per identificare ed estrarre informazioni soggettive in documenti, commenti e post [1].
@@ -13128,9 +13129,10 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a id='2'>
     <h3>Architettura del sistema</h3>
-</a>
-<br>Di seguito è riportato uno schema che rappresenta il sistema ideato. In particolare, si notino l'ambiente virtuale su cui è in esecuzione Spark, le varie tecnologie (tool e librerie) utilizzate per l'elaborato e l'ambiente host su cui è in ascolto il server di MongoDB. Infine, tutti i risultati sono scritti sul Database NoSQL per facilitare la fase di reportistica svolta tramite il tool MicroStrategy e mostrata in un successivo paragrafo.</p>
-
+</a></p>
+<div style="text-align: justify">
+<br>Di seguito è riportato uno schema che rappresenta il sistema ideato. In particolare, si notino l'ambiente virtuale su cui è in esecuzione Spark, le varie tecnologie (tool e librerie) utilizzate per l'elaborato e l'ambiente host su cui è in ascolto il server di MongoDB. Infine, tutti i risultati sono scritti sul Database NoSQL per facilitare la fase di reportistica svolta tramite il tool MicroStrategy e mostrata in un successivo paragrafo.
+</div>
 </div>
 </div>
 </div>
@@ -13157,11 +13159,11 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><h5>Estrazione dei Tweet</h5>
+<p><h5>Estrazione dei Tweet</h5></p>
+<div style="text-align: justify">
 <br>Sebbene i termini d'uso delle API di Twitter sconsiglino la condivisione via web dei dati raccolti, consentono quella di file contenenti gli id dei tweet. A questo punto, con un processo noto come "Hydration" è possibile ricavare l'intera struttura dati del tweet tramite il suo id.
 <br>Il processo di Hydration è molto semplice: data una collezione di identificativi (id) è possibile utilizzare <b>Twarc</b>, un tool, disponibile anche come libreria Python, che permette di scaricare tweet rappresentati in formato JSON. Per poter effettuare il download dei tweet è necessario creare un’app con un account developer di Twitter, ottenere le chiavi Consumer API e i token di accesso e utilizzare tali informazioni per abilitare Twarc al download. In particolare, tale abilitazione può avvenire in due modi:
-&lt;/div&gt;</p>
-
+</div>
 </div>
 </div>
 </div>
@@ -13169,7 +13171,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <ul>
-<li>Utilizzando il tool a linea di comando: lanciare twarc configure e seguire tutte le indicazioni per la registrazione delle chiavi e dei token</li>
+<li>Utilizzando il tool a linea di comando: lanciare <i>twarc configure</i>  e seguire tutte le indicazioni per la registrazione delle chiavi e dei token;</li>
 <li>In Python, utilizzare il costruttore:</li>
 </ul>
 
@@ -13193,7 +13195,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <div style="text-align: justify">
-<br>Per poter estrarre i tweet è stato utilizzato lo script TwarcTwitterExtraction.py, disponibile nel repository GitHub del progetto. Tale script utilizza in input una lista di identificativi e genera in output un file in formato JSON Lines contenente i JSON dei tweet. Per tale elaborato sono stati estratti gli identificativi associati alle date:
+    <br>Per poter estrarre i tweet è stato utilizzato lo script <i>TwarcTwitterExtraction.py</i>, disponibile nel repository GitHub del progetto. Tale script utilizza in input una lista di identificativi e genera in output un file in formato JSON Lines contenente i JSON dei tweet. Per tale elaborato sono stati estratti gli identificativi associati alle date:
 </div>
 </div>
 </div>
@@ -13212,7 +13214,7 @@ div#notebook {
 <li>20/04/2020</li>
 <li>27/04/2020</li>
 </ul>
-<p>A causa dell’elevata quantità di id presenti in questi file, essi sono stati processati soltanto in parte, arrivando a raccogliere 132218 tweet.</p>
+<p>A causa dell’elevata quantità di id presenti in questi file, essi sono stati processati soltanto in parte, estraendo da ogni file circa 15000 id, arrivando a raccogliere 132218 tweet.</p>
 
 </div>
 </div>
@@ -13226,11 +13228,11 @@ div#notebook {
 <li>Scrivendo un contenuto originale;</li>
 <li>Condividendo un tweet di un altro utente.</li>
 </ul>
-<p>Dalla struttura JSON di un tweet è quindi possibile capirne la tipologia, il testo associato, informazioni sull’utente che l’ha postato, la data, le informazioni di geolocalizzazione, etc. Per lo svolgimento dell’elaborato sono stati fondamentali i seguenti campi o strutture:</p>
+<p>Dalla struttura JSON di un tweet è quindi possibile capirne la tipologia, il testo associato, le informazioni sull’utente che l’ha postato, la data, le informazioni di geolocalizzazione, ecc. Per lo svolgimento dell’elaborato sono stati fondamentali i seguenti campi o strutture:</p>
 <ul>
 <li><b>full_text</b>: contenente il testo completo del tweet;</li>
 <li><b>lang</b>: contenente la lingua con cui è stato scritto quel tweet;</li>
-<li><b>retweeted_status</b>: in caso di retweet, rappresenta una struttura innestata contenente tutte le informazioni del tweet che è stato ricondiviso (autore, testo del post, etc.), altrimenti il campo non è presente.</li>
+<li><b>retweeted_status</b>: in caso di retweet, rappresenta una struttura innestata contenente tutte le informazioni del tweet che è stato ricondiviso (autore, testo del post, ecc.), altrimenti il campo non è presente.</li>
 </ul>
 <p>Di seguito è mostrata la struttura completa di un tweet con e senza retweeted_status.
 <img src="images/tweet_json.jpg" alt="JSON dei tweet"></p>
@@ -13307,8 +13309,8 @@ In entrambi i casi l’idea è stata quella di selezionare, in una prima query, 
 <li><b>retweeted_status.full_text</b>: “Spark è potentissimo!”</li>
 </ul>
 <div style="text-align: justify">
-Come si vede, il contenuto utile del tweet è lo stesso, si è deciso di considerare solo il secondo.
-Poiché, in generale, può capitare che più utenti ricondividano lo stesso tweet, potrebbero esserci dei testi duplicati. Per rimuoverli è stato utilizzata una distinct() sul DataFrame contenente i tweet.
+Come si vede, il contenuto utile del tweet è lo stesso, dunque si è deciso di considerare solo il secondo.
+Poiché, in generale, può capitare che più utenti ricondividano lo stesso tweet, potrebbero esserci dei testi duplicati. Per rimuoverli è stato utilizzato il metodo <i>distinct()</i> sul DataFrame contenente i tweet.
 </div>
 </div>
 </div>
@@ -13347,7 +13349,7 @@ Poiché, in generale, può capitare che più utenti ricondividano lo stesso twee
     <h3>Etichettatura tramite VADER</h3>
 </a></p>
 <div style="text-align: justify">
-<br>Uno dei problemi principali nell'addestramento di modelli di ML per la sentiment analysis è la disponibilità di un dataset etichettato. Oltre ad essere un task time-consuming, l'etichettatura di un dataset del genere può essere anche complicata. Mentre per alcuni tweet è semplice estrarre la polarità del sentimento espresso (positiva, negativa, neutra), per altri può essere estremamente soggettiva. Di norma (e questo a prescindere dalla sentiment analysis), il labeling di un dataset è a cura di chi ha una profonda esperienza nel dominio che si sta trattando. Nella sentiment analysis, per quanto sopra riportato, questo è ancora più vero.
+<br>Uno dei problemi principali nell'addestramento di modelli di ML per la Sentiment Analysis è la disponibilità di un dataset etichettato. Oltre ad essere un task time-consuming, l'etichettatura di un dataset del genere può essere anche complicata. Mentre per alcuni tweet è semplice estrarre la polarità del sentimento espresso (positiva, negativa, neutra), per altri può essere estremamente soggettiva. Di norma (e questo a prescindere dalla Sentiment Analysis), il labeling di un dataset è a cura di chi ha una profonda esperienza nel dominio che si sta trattando. Nella Sentiment Analysis, per quanto sopra riportato, questo è ancora più vero.
 In questa tesina, assumiamo come metodo di etichettatura quello effettuato tramite un modello preaddestrato chiamato VADER. 
 <br><b>VADER (Valence Aware Dictionary and sEntiment Reasoner) [3] </b> è un tool di Sentiment Analysis di tipo rule-based specificamente progettato per i sentimenti espressi nei social media. VADER usa un lessico semantico, ovvero una lista di parole etichettate in base al loro orientamento ad essere positive o negative.
 <br>È stato osservato che VADER è molto performante quando si tratta di analizzare testi provenienti da social media, recensioni di film e di prodotti. Questo perché VADER non solo tratta i termini usuali del dizionario, ma anche espressioni tipiche del mondo della messaggistica istantanea come:
@@ -13365,7 +13367,7 @@ In questa tesina, assumiamo come metodo di etichettatura quello effettuato trami
 <li>uso delle emoticon.</li>
 </ul>
 <div style="text-align: justify">
-L'uso di VADER è estremamente semplice in python grazie al pacchetto nltk (Natural Language ToolKit). Di seguito è mostrata una porzione di codice che mostra come avviene l'etichettatura. Il metodo polarity_scores() permette di ricavare gli indici di polarità (positivo, negativo, neutro) per una determinata frase.
+L'uso di VADER è estremamente semplice in python grazie al pacchetto nltk (Natural Language ToolKit). Di seguito è mostrata una porzione di codice che mostra come avviene l'etichettatura. Il metodo <i>polarity_scores()</i> permette di ricavare gli indici di polarità (positivo, negativo, neutro) per una determinata frase.
 I positive, negative e neutral scores rappresentano la porzione di testo che ricade in tali categorie. Il compound score (valore compreso tra -1 e 1), invece, riassume in un unico valore la positività o la negatività di un testo. Se 1, il testo è totalmente positivo, -1 altrimenti.
 </div>
 </div>
@@ -13592,7 +13594,7 @@ Nel codice riportato è stata definita una pipeline che, in sequenza, crea TF, I
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <ul>
-<li><b>estrazione del tag dai token</b>. Con questo si intende effettuare una sorta di analisi grammaticale del testo per capire se un termine è un nome, un aggettivo, un verbo o un avverbio. Questa informazione è utile sia per la corretta lemmatizzazione (vedi punto successivo), sia per estrarre il corretto synset da SENTIWORDNET. Il metodo pos_tag del pacchetto nltk fa proprio al caso nostro. Ad esempio, se abbiamo una lista ('play','cards'), il risultato sarà (('play','v'), ('cards','n'));</li>
+<li><b>estrazione del tag dai token</b>. Con questo si intende effettuare una sorta di analisi grammaticale del testo per capire se un termine è un nome, un aggettivo, un verbo o un avverbio. Questa informazione è utile sia per la corretta lemmatizzazione (vedi punto successivo), sia per estrarre il corretto synset da SENTIWORDNET. Il metodo <i>pos_tag()</i> del pacchetto nltk fa proprio al caso nostro. Ad esempio, se abbiamo una lista ('play','cards'), il risultato sarà (('play','v'), ('cards','n'));</li>
 </ul>
 
 </div>
@@ -13739,8 +13741,8 @@ Nel codice riportato è stata definita una pipeline che, in sequenza, crea TF, I
 Dopo aver etichettato tutti tweet con il modello VADER, per facilitare la visualizzazione dei risultati ottenuti, è stato utilizzato il tool di BI MicroStrategy. I valori delle label (0, 1, 2) corrispondono rispettivamente ai sentimenti "Neutro", "Positivo" e "Negativo". Di seguito è riportato un grafico che mostra l'evoluzione temporale dei sentimenti durante i mesi di Marzo e Aprile 2020.
 </div><p><img src="images/diagramma_microstrategy.jpg" alt="Grafico Microstrategy"></p>
 <div style="text-align: justify">
-Come si può notare, molti tweet sono stati etichettati come neutri, mentre la quantità di positivi e negativi è pressoché la stessa. A ben vedere, però, la classificazione è stata fatta in modo piuttosto corretto se si pensa che molti tweet, in realtà, consistono soprattutto nella diffusione di messaggi relativi al numero di contagi o comunque difficilmente associabili a un sentimento positivo/negativo. Di seguito sono mostrati alcuni esempi di tweet etichettati. Il tweet "Neutro 2" ricade proprio nella categoria di tweet che "diffondono notizie" e per questo è difficile che il risultato sia diverso dal "neutro", dato nella maggior parte dei casi non esprimono uno stato d'animo, ma riportano semplicemente un fatto. Il caso del tweet "Neutro 1", invece, è emblematico in quanto esprime l'opinione di un utente ma, non essendo chiaro il suo orientamento, viene catalogato come tale.
-<br> Per trarre delle conclusioni sull'effettivo stato d'animo degli utenti (come hanno reagito) nel periodo di quarantena vissuto, quindi, risulta chiaro che andrebbero dapprima eliminati tutti quei tweet simili a alla tipologia di "Neutro 2", che non esprimono veri e propri sentimenti.
+<br>Come si può notare, molti tweet sono stati etichettati come neutri, mentre la quantità di positivi e negativi è pressoché la stessa. A ben vedere, però, la classificazione è stata fatta in modo piuttosto corretto se si pensa che molti tweet, in realtà, consistono soprattutto nella diffusione di messaggi relativi al numero di contagi o comunque difficilmente associabili a un sentimento positivo/negativo. Di seguito sono mostrati alcuni esempi di tweet etichettati. Il tweet "Neutro 2" ricade proprio nella categoria di tweet che "diffondono notizie" e per questo è difficile che il risultato sia diverso dal "neutro", dato che nella maggior parte dei casi non esprimono uno stato d'animo, ma riportano semplicemente un fatto. Il caso del tweet "Neutro 1", invece, è emblematico in quanto esprime l'opinione di un utente ma, non essendo chiaro il suo orientamento, viene catalogato come tale.
+<br> Per trarre delle conclusioni sull'effettivo stato d'animo degli utenti (come hanno reagito) nel periodo di quarantena vissuto, quindi, risulta chiaro che andrebbero dapprima eliminati tutti quei tweet simili alla tipologia di "Neutro 2", che non esprimono veri e propri sentimenti.
 </div><p><img src="images/esempi_tweet.jpg" alt="Esempi tweet etichettati"></p>
 
 </div>
@@ -13777,7 +13779,7 @@ Il passo successivo è stato quello di eseguire le due versioni senza Spark. I r
 <li>Python puro = 719s</li>
 </ul>
 <div style="text-align: justify">
-All'atto della creazione del DataFrame, Spark suddivide i dati su più partizioni (di default 200) in modo tale che tutti i worker lavorino sulla propria partizione in parallelo. Il programmatore ha due possibilità: la prima consiste nell'ignorare aspetti relativi alla concorrenza e alla configurazione della macchina (o del cluster) su cui esegue il codice; la seconda consiste nella scelta del numero di worker e del numero di partizioni in cui suddividere il dataframe. Nel secondo caso, è possibile lanciare pyspark con l'opzione --master local[K], dove K è proprio il numero di worker thread desiderato (idealmente pari al numero di core della macchina) e, nel codice, tramite oppurtune funzioni (parallelize(), repartition(), ...) controllare il numero di partizioni.
+All'atto della creazione del DataFrame, Spark suddivide i dati su più partizioni (di default 200) in modo tale che tutti i worker lavorino sulla propria partizione in parallelo. Il programmatore ha due possibilità: la prima consiste nell'ignorare aspetti relativi alla concorrenza e alla configurazione della macchina (o del cluster) su cui esegue il codice; la seconda consiste nella scelta del numero di worker e del numero di partizioni in cui suddividere il DataFrame. Nel secondo caso, è possibile lanciare pyspark con l'opzione --master local[K], dove K è proprio il numero di worker thread desiderato (idealmente pari al numero di core della macchina) e, nel codice, tramite oppurtune funzioni (parallelize(), repartition(), ...) controllare il numero di partizioni.
 Poiché la macchina virtuale gira su due core fisici, abbiamo lanciato pyspark specificando 2 worker e suddiviso il dataframe in 2 partizioni. Il tempo d'esecuzione è stato di 345s.
 Allo stesso modo, abbiamo lanciato lo script python con la libreria Multiprocessing indicando 2 come grado parallelizzazione. Il risultato ottenuto è stato di 424s.
 <br>Infine, i tempi relativi all'esecuzione su Spark potrebbero anche coinvolgere operazioni di lettura da MongoDB per la sua caratteristica di lazy evaluation. Invece, i tempi relativi alle esecuzioni "no Spark" si riferiscono esclusivamente all'etichettatura.
@@ -13935,19 +13937,6 @@ In particolare è stata utilizzata la versione 2.4.2 Community Server scaricabil
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 </div>
     </div>
   </div>
